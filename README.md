@@ -21,7 +21,7 @@ docker run -d \
   crypt010/kopage:latest
 ```
 
-Visit `http://localhost:8080/free_install.php` to complete the Kopage installation.
+Visit `http://localhost:8080/install_izkopage-setup.php` to complete the Kopage installation.
 
 ## Configuration
 

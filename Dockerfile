@@ -189,7 +189,7 @@ RUN set -eux; \
 
 # Pre-download Kopage installer into the image
 RUN set -eux; \
-    curl -fsSL "https://www.kopage.com/index.php?fdownload=file-installer.zip" -o /usr/local/kopage-installer.zip; \
+    curl -fsSL "https://www.kopage.com/installer.zip" -o /usr/local/kopage-installer.zip; \
     echo "Kopage installer pre-downloaded to /usr/local/kopage-installer.zip"
 
 # Copy entrypoint script

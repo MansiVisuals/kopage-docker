@@ -30,7 +30,7 @@ if [[ "$1" == apache2* ]] || [ "$1" = 'apache2-foreground' ]; then
     fi
     
     # Check what we have in the webroot and provide appropriate messages
-    if [ ! -f "$WEBROOT/index.php" ] && [ ! -f "$WEBROOT/free_install.php" ]; then
+    if [ ! -f "$WEBROOT/index.php" ] && [ ! -f "$WEBROOT/install_izkopage-setup.php" ]; then
         # if the directory exists and Kopage doesn't appear to be installed AND the permissions of it are root:root, let's chown it (likely a Docker-created directory)
         if [ "$uid" = '0' ] && [ "$(stat -c '%u:%g' "$WEBROOT")" = '0:0' ]; then
             chown "$user:$group" "$WEBROOT"
@@ -66,11 +66,11 @@ if [[ "$1" == apache2* ]] || [ "$1" = 'apache2-foreground' ]; then
         rm -rf /tmp/kopage-staging
         chmod -R 755 "$WEBROOT"
         echo "Kopage installer extracted successfully!"
-        echo "Visit http://localhost:<YOUR_PORT>/free_install.php to complete installation"
-        
-    elif [ -f "$WEBROOT/free_install.php" ] && [ ! -f "$WEBROOT/index.php" ]; then
+        echo "Visit http://localhost:<YOUR_PORT>/install_izkopage-setup.php to complete installation"
+
+    elif [ -f "$WEBROOT/install_izkopage-setup.php" ] && [ ! -f "$WEBROOT/index.php" ]; then
         echo "Kopage installer detected - installation not yet completed"
-        echo "Visit http://localhost:<YOUR_PORT>/free_install.php to complete installation"
+        echo "Visit http://localhost:<YOUR_PORT>/install_izkopage-setup.php to complete installation"
         
         # attempt to ensure that existing files are owned by the run user (could be on a filesystem that doesn't allow chown like some NFS setups)
         if [ "$uid" = '0' ]; then
