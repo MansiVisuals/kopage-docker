@@ -1,0 +1,6 @@
+# .dockerignore - exclude unnecessary files from build context
+.git
+.gitignore
+*.md
+README*
+.DS_Store
