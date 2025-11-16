@@ -5,6 +5,13 @@ FROM php:8.2-apache
 # Build argument for Kopage version
 ARG KOPAGE_VERSION=4.7.0
 
+# Apply all available security updates immediately after base image
+# This fixes HIGH and MEDIUM CVEs with available patches (curl, libxml2)
+RUN set -eux; \
+    apt-get update; \
+    apt-get upgrade -y --no-install-recommends; \
+    rm -rf /var/lib/apt/lists/*
+
 # Metadata labels - version matches Kopage version
 LABEL maintainer="Kopage" \
       org.opencontainers.image.title="Kopage Docker" \
