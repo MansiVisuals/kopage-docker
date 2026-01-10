@@ -53,7 +53,9 @@ Or build manually:
 
 ```bash
 docker buildx build \
+  --pull \
   --build-arg KOPAGE_VERSION=4.7.0 \
+  --build-arg APT_CACHE_BUSTER="$(date -u +%Y%m%d%H%M%S)" \
   --platform linux/amd64,linux/arm64 \
   -t crypt010/kopage:4.7.0 \
   -t crypt010/kopage:latest \

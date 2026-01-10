@@ -5,9 +5,13 @@ FROM php:8.2-apache
 # Build argument for Kopage version
 ARG KOPAGE_VERSION=4.7.0
 
+# Cache-buster for APT layers (useful when building with buildx cache enabled)
+ARG APT_CACHE_BUSTER=0
+
 # Apply all available security updates immediately after base image
 # This fixes HIGH and MEDIUM CVEs with available patches (curl, libxml2)
 RUN set -eux; \
+    echo "APT_CACHE_BUSTER=$APT_CACHE_BUSTER" > /dev/null; \
     apt-get update; \
     apt-get upgrade -y --no-install-recommends; \
     rm -rf /var/lib/apt/lists/*
@@ -21,6 +25,7 @@ LABEL maintainer="Kopage" \
 
 # Install PHP extensions with proper dependency management
 RUN set -eux; \
+    echo "APT_CACHE_BUSTER=$APT_CACHE_BUSTER" > /dev/null; \
     savedAptMark="$(apt-mark showmanual)"; \
     \
     apt-get update; \
@@ -36,6 +41,8 @@ RUN set -eux; \
         libexpat1 \
         libcurl4-openssl-dev \
     ; \
+    # Ensure newly installed packages also pick up latest security updates (e.g. libpng via -security)
+    apt-get upgrade -y --no-install-recommends; \
     \
     docker-php-ext-configure gd --with-jpeg --with-freetype; \
     docker-php-ext-install -j "$(nproc)" \
@@ -67,6 +74,10 @@ RUN set -eux; \
     apt-mark manual unzip curl sqlite3; \
     apt-mark manual $runDeps; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+    \
+    # Remove linux-libc-dev to eliminate kernel CVE warnings (headers only, not needed at runtime)
+    apt-get remove -y linux-libc-dev || true; \
+    apt-get autoremove -y; \
     rm -rf /var/lib/apt/lists/*; \
     \
     # Final validation
@@ -75,6 +86,7 @@ RUN set -eux; \
     [ -z "$err" ]
 
 # Install ionCube Loader for PHP 8.2 (multi-architecture support)
+# Downloaded over HTTPS from official ionCube CDN
 RUN set -eux; \
     ARCH=$(uname -m); \
     echo "Detected architecture: $ARCH"; \
@@ -95,9 +107,10 @@ RUN set -eux; \
     cp /tmp/ioncube/ioncube_loader_lin_8.2.so $PHP_EXT_DIR/; \
     echo "zend_extension=$PHP_EXT_DIR/ioncube_loader_lin_8.2.so" > /usr/local/etc/php/conf.d/00-ioncube.ini; \
     rm -rf /tmp/ioncube*; \
+    php -v | grep -i ioncube; \
     echo "ionCube installation complete"
 
-# Set production-ready PHP configuration
+# Set production-ready PHP configuration with security hardening
 RUN { \
     echo 'error_reporting = E_ERROR | E_WARNING | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_RECOVERABLE_ERROR'; \
     echo 'display_errors = Off'; \
@@ -108,6 +121,16 @@ RUN { \
     echo 'ignore_repeated_errors = On'; \
     echo 'ignore_repeated_source = Off'; \
     echo 'html_errors = Off'; \
+    echo ''; \
+    echo '; Security hardening'; \
+    echo 'expose_php = Off'; \
+    echo 'allow_url_fopen = On'; \
+    echo 'allow_url_include = Off'; \
+    echo 'disable_functions = exec,passthru,shell_exec,system,proc_open,popen,pcntl_exec,pcntl_fork,pcntl_signal,pcntl_waitpid,pcntl_wexitstatus,pcntl_wifexited,pcntl_wifsignaled,pcntl_wifstopped,pcntl_wstopsig,pcntl_wtermsig'; \
+    echo 'session.cookie_httponly = 1'; \
+    echo 'session.cookie_samesite = Strict'; \
+    echo 'session.use_strict_mode = 1'; \
+    echo '; session.cookie_secure is configured at runtime via entrypoint (see PHP_SESSION_COOKIE_SECURE env var)'; \
 } > /usr/local/etc/php/conf.d/error-logging.ini
 
 # Performance optimization: 4GB RAM, video support, fast execution
@@ -137,7 +160,7 @@ RUN set -eux; \
         echo 'opcache.save_comments=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
-# Enable Apache modules for reverse proxy/CDN usage
+# Enable Apache modules for reverse proxy/CDN usage and security
 RUN set -eux; \
     a2enmod rewrite headers; \
     \
@@ -155,7 +178,14 @@ RUN set -eux; \
     a2enconf remoteip; \
     \
     # Fix LogFormat to show real client IPs instead of proxy IPs
-    find /etc/apache2 -type f -name '*.conf' -exec sed -ri 's/([[:space:]]*LogFormat[[:space:]]+"[^"]*)%h([^"]*")/\1%a\2/g' '{}' +
+    find /etc/apache2 -type f -name '*.conf' -exec sed -ri 's/([[:space:]]*LogFormat[[:space:]]+"[^"]*)%h([^"]*")/\1%a\2/g' '{}' +; \
+    \
+    # Security hardening: Hide Apache version and OS info
+    { \
+        echo 'ServerTokens Prod'; \
+        echo 'ServerSignature Off'; \
+        echo 'TraceEnable Off'; \
+    } >> /etc/apache2/conf-available/security.conf
 
 # Enable compression and caching for faster page loads
 RUN set -eux; \
@@ -203,8 +233,9 @@ RUN set -eux; \
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Environment variable for optional ServerName configuration
-ENV SERVER_NAME=""
+# Environment variables for configuration
+ENV SERVER_NAME="" \
+    PHP_SESSION_COOKIE_SECURE="1"
 
 # Expose port 80
 EXPOSE 80

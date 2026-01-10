@@ -11,6 +11,19 @@ if [ -n "${SERVER_NAME:-}" ]; then
     echo "Apache ServerName set to: ${SERVER_NAME}"
 fi
 
+# Configure PHP session cookie security based on environment variable
+# Default is 1 (secure, HTTPS only). Set to 0 for localhost HTTP testing.
+PHP_SESSION_COOKIE_SECURE="${PHP_SESSION_COOKIE_SECURE:-1}"
+if [ -f /usr/local/etc/php/conf.d/security-runtime.ini ]; then
+    rm /usr/local/etc/php/conf.d/security-runtime.ini
+fi
+echo "session.cookie_secure = ${PHP_SESSION_COOKIE_SECURE}" > /usr/local/etc/php/conf.d/security-runtime.ini
+if [ "$PHP_SESSION_COOKIE_SECURE" = "0" ]; then
+    echo "WARNING: Session cookies enabled for HTTP (localhost mode)"
+else
+    echo "Session cookies require HTTPS (production mode)"
+fi
+
 if [[ "$1" == apache2* ]] || [ "$1" = 'apache2-foreground' ]; then
     uid="$(id -u)"
     gid="$(id -g)"

@@ -57,6 +57,20 @@ echo "  Tags: ${VERSION}, latest"
 echo "  Platforms: linux/amd64, linux/arm64"
 echo ""
 
+# Decide whether to force a refresh of the base image and APT-installed packages
+read -p "Force refresh base image + OS packages? (recommended for CVE fixes) (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Nn]$ ]]; then
+    BUILD_PULL_ARGS=()
+    APT_CACHE_BUSTER="0"
+    echo "→ Using build cache (may keep older OS packages)."
+else
+    BUILD_PULL_ARGS=(--pull)
+    APT_CACHE_BUSTER="$(date -u +%Y%m%d%H%M%S)"
+    echo "→ Forcing refresh (pull latest base + bust APT cache)."
+fi
+echo ""
+
 # Confirm before building
 read -p "Proceed with build? (y/n) " -n 1 -r
 echo
@@ -74,6 +88,8 @@ docker buildx create --name kopage-builder --use 2>/dev/null || docker buildx us
 # Build and push multi-architecture image
 docker buildx build \
     --build-arg KOPAGE_VERSION="${VERSION}" \
+    --build-arg APT_CACHE_BUSTER="${APT_CACHE_BUSTER}" \
+    "${BUILD_PULL_ARGS[@]}" \
     --platform linux/amd64,linux/arm64 \
     -t "${IMAGE_NAME}:${VERSION}" \
     -t "${IMAGE_NAME}:latest" \
