@@ -28,6 +28,7 @@ Visit `http://localhost:8080/install_izkopage-setup.php` to complete the Kopage 
 ### Environment Variables
 
 - `SERVER_NAME` - Optional Apache ServerName configuration
+- `PHP_SESSION_COOKIE_SECURE` - Controls secure cookie setting for sessions. Default is `1` (HTTPS required). Set to `0` for localhost HTTP testing.
 
 ### Volume
 
