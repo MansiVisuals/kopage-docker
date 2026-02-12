@@ -1,6 +1,6 @@
 # Base image: PHP 8.2 + Apache (official, multi-architecture)
-# Security updates handled by base image maintainers
-FROM php:8.2-apache
+# Pin to Debian bookworm for newer security patches
+FROM php:8.2-apache-bookworm
 
 # Build argument for Kopage version
 ARG KOPAGE_VERSION=4.7.0
@@ -38,7 +38,6 @@ RUN set -eux; \
         curl \
         sqlite3 \
         libsqlite3-dev \
-        libexpat1 \
         libcurl4-openssl-dev \
     ; \
     # Ensure newly installed packages also pick up latest security updates (e.g. libpng via -security)
@@ -227,7 +226,10 @@ RUN set -eux; \
 # Pre-download Kopage installer into the image
 RUN set -eux; \
     curl -fsSL "https://www.kopage.com/installer.zip" -o /usr/local/kopage-installer.zip; \
-    echo "Kopage installer pre-downloaded to /usr/local/kopage-installer.zip"
+    echo "Kopage installer pre-downloaded to /usr/local/kopage-installer.zip"; \
+    apt-get purge -y curl; \
+    apt-get autoremove -y; \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
