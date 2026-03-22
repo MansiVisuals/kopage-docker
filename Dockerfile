@@ -223,47 +223,16 @@ RUN set -eux; \
     } > /etc/apache2/conf-available/performance.conf; \
     a2enconf performance
 
-# Pre-download Kopage installer into the image
-# Then remove all build-time packages no longer needed at runtime
-# This eliminates 65+ CVEs from binutils, gcc, m4, patch, re2c etc.
+# Pre-download Kopage installer, then remove build-time packages not needed at runtime
 RUN set -eux; \
     curl -fsSL "https://www.kopage.com/installer.zip" -o /usr/local/kopage-installer.zip; \
-    echo "Kopage installer pre-downloaded to /usr/local/kopage-installer.zip"; \
+    for pkg in autoconf binutils binutils-common cpp cpp-12 curl dpkg-dev file \
+               gcc gcc-12 m4 make patch re2c; do \
+        apt-get purge -y "$pkg" 2>/dev/null || true; \
+    done; \
+    apt-get -y autoremove --purge; \
     apt-get update; \
-    apt-get purge -y --auto-remove \
-        autoconf \
-        binutils \
-        binutils-common \
-        cpp \
-        cpp-12 \
-        curl \
-        dpkg-dev \
-        file \
-        gcc \
-        gcc-12 \
-        libasan8 \
-        libbinutils \
-        libcc1-0 \
-        libctf-nobfd0 \
-        libctf0 \
-        libdpkg-perl \
-        libgcc-12-dev \
-        libgprofng0 \
-        libhwasan0 \
-        libisl23 \
-        libitm1 \
-        liblsan0 \
-        libmagic-mgc \
-        libmagic1 \
-        libmpc3 \
-        libmpfr6 \
-        libtsan2 \
-        libubsan1 \
-        m4 \
-        make \
-        patch \
-        re2c \
-    ; \
+    apt-get upgrade -y --no-install-recommends; \
     rm -rf /var/lib/apt/lists/*
 
 # Copy entrypoint script
