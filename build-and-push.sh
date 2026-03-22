@@ -40,18 +40,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     cleanup_docker
 fi
 
-# Get version number from user
-echo "Enter Kopage version number (e.g., 4.7.0):"
-read -r VERSION
-
-if [ -z "$VERSION" ]; then
-    echo "Error: Version number is required!"
-    exit 1
-fi
-
-echo ""
 echo "Configuration:"
-echo "  Version: ${VERSION}"
 echo "  Image: ${IMAGE_NAME}"
 echo "  Tag: latest"
 echo "  Platforms: linux/amd64, linux/arm64"
@@ -87,7 +76,6 @@ docker buildx create --name kopage-builder --use 2>/dev/null || docker buildx us
 
 # Build and push multi-architecture image
 docker buildx build \
-    --build-arg KOPAGE_VERSION="${VERSION}" \
     --build-arg APT_CACHE_BUSTER="${APT_CACHE_BUSTER}" \
     "${BUILD_PULL_ARGS[@]}" \
     --platform linux/amd64,linux/arm64 \
