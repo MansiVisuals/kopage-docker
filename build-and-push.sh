@@ -53,7 +53,7 @@ echo ""
 echo "Configuration:"
 echo "  Version: ${VERSION}"
 echo "  Image: ${IMAGE_NAME}"
-echo "  Tags: ${VERSION}, latest"
+echo "  Tag: latest"
 echo "  Platforms: linux/amd64, linux/arm64"
 echo ""
 
@@ -91,7 +91,6 @@ docker buildx build \
     --build-arg APT_CACHE_BUSTER="${APT_CACHE_BUSTER}" \
     "${BUILD_PULL_ARGS[@]}" \
     --platform linux/amd64,linux/arm64 \
-    -t "${IMAGE_NAME}:${VERSION}" \
     -t "${IMAGE_NAME}:latest" \
     --push \
     .
@@ -100,7 +99,6 @@ echo ""
 echo "=========================================="
 echo "  ✓ Successfully built and pushed!"
 echo "=========================================="
-echo "  ${IMAGE_NAME}:${VERSION}"
 echo "  ${IMAGE_NAME}:latest"
 echo ""
 echo "Platforms: linux/amd64, linux/arm64"
