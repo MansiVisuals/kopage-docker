@@ -44,7 +44,14 @@ docker run -d \
 
 ## Building
 
-Use the interactive build script:
+A GitHub Action rebuilds and pushes `crypt010/kopage:latest` every Monday at
+03:00 UTC (and on pushes to `main` that touch the Dockerfile or entrypoint),
+pulling the freshest base image and Debian security updates. Each build is
+smoke-tested (extensions, ionCube, Apache config, HTTP + Brotli check) before
+it is pushed. It requires the `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`
+repository secrets.
+
+For local builds, use the interactive build script:
 
 ```bash
 ./build-and-push.sh
