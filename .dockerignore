@@ -4,3 +4,5 @@
 *.md
 README*
 .DS_Store
+build-and-push.sh
+package-lock.json
