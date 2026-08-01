@@ -16,15 +16,51 @@ on:
 env:
   IMAGE: crypt010/kopage
 
+# Read-only by default. Only the commit-manifest job below widens this, so the
+# token that can write to the repo never exists in the job that builds the image
+# and runs third-party code.
+permissions:
+  contents: read
+
+# The weekly rebuild and a push to main must not race to publish :latest.
+concurrency:
+  group: build-and-push
+  cancel-in-progress: false
+
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
+    # Builds the image, runs the installer, and pushes to Docker Hub. Holds the
+    # Docker Hub secrets but no repo write access.
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set APT cache buster
         run: echo "APT_CACHE_BUSTER=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
+
+      # The installer is served from a static URL, so the version it reports is
+      # whatever Kopage currently publishes. Read it for the manifest below —
+      # this is a record of what was built, never an input to the build.
+      - name: Resolve Kopage installer version
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://www.kopage.com/installer.zip" -o /tmp/installer.zip
+          # The installer is an ionCube-encoded PHP file with a plaintext header.
+          # Extract to a file first: piping unzip into head/grep -m1 would SIGPIPE
+          # unzip and trip pipefail. LC_ALL=C keeps grep working on binary content.
+          unzip -p /tmp/installer.zip > /tmp/installer.php
+          version="$(LC_ALL=C grep -a -o -m1 -E 'Version:[[:space:]]*[0-9][0-9.]*' /tmp/installer.php \
+            | LC_ALL=C grep -o -E '[0-9][0-9.]*' || true)"
+          if [ -z "$version" ]; then
+            echo "::error::Could not read a version from installer.zip"
+            exit 1
+          fi
+          echo "KOPAGE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "INSTALLER_SHA256=$(sha256sum /tmp/installer.zip | cut -d' ' -f1)" >> "$GITHUB_ENV"
 
       - name: Set up QEMU (for arm64)
         uses: docker/setup-qemu-action@v3
@@ -73,11 +109,18 @@ jobs:
           # Brotli must be negotiated for clients that support it
           curl -s -D - -o /dev/null -H 'Accept-Encoding: br' http://localhost:8080/install_izkopage-setup.php \
             | grep -qi 'content-encoding: br'
-          docker logs smoke
-          docker rm -f smoke
+
+      # Runs even when the smoke test fails — that is exactly when the container
+      # logs are worth having, and the step above exits before reaching them.
+      - name: Smoke test container logs
+        if: always()
+        run: |
+          docker logs smoke 2>&1 || true
+          docker rm -f smoke >/dev/null 2>&1 || true
 
       # amd64 layers are reused from the smoke-test build (same cache buster)
       - name: Build and push multi-arch
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -87,3 +130,105 @@ jobs:
           build-args: |
             APT_CACHE_BUSTER=${{ env.APT_CACHE_BUSTER }}
           tags: ${{ env.IMAGE }}:latest
+
+      # Record what actually went into the published image. The Dockerfile
+      # deliberately tracks moving targets (base image tag, apt upgrade, the
+      # installer URL), so this file is the only place the repo says what a
+      # given build contained.
+      - name: Generate image manifest
+        # Passed as env rather than interpolated into the script below: a bare
+        # ${{ }} inside run: is the script-injection pattern CodeQL flags.
+        env:
+          PUSH_DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          set -euo pipefail
+          # The index digest is the sha256 of the raw manifest bytes. Verified to
+          # match `docker image inspect --format '{{index .RepoDigests 0}}'`; the
+          # imagetools --format templates do not expose it directly.
+          base_digest="$(docker buildx imagetools inspect php:8.2-apache-bookworm --raw \
+            | sha256sum | cut -d' ' -f1)"
+          base_digest="sha256:${base_digest}"
+
+          php_version="$(docker run --rm --entrypoint php kopage:smoke-test -r 'echo PHP_VERSION;')"
+
+          # phpversion() returns false for a missing extension, which echoes as an
+          # empty string with exit 0 — so an "|| echo unknown" fallback never fires.
+          ioncube_version="$(docker run --rm --entrypoint php kopage:smoke-test \
+            -r 'echo phpversion("ionCube Loader");' 2>/dev/null)"
+          [ -n "$ioncube_version" ] || ioncube_version='unknown'
+
+          {
+            echo "# Image manifest"
+            echo
+            echo "Generated automatically by \`.github/workflows/build-and-push.yml\`."
+            echo "Describes the contents of the most recently published \`${IMAGE}:latest\`."
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Built (UTC) | $(date -u '+%Y-%m-%d %H:%M:%S') |"
+            echo "| Image digest | \`${PUSH_DIGEST}\` |"
+            echo "| Base image | \`php:8.2-apache-bookworm\` |"
+            echo "| Base image digest | \`${base_digest}\` |"
+            echo "| PHP | ${php_version} |"
+            echo "| ionCube Loader | ${ioncube_version} |"
+            echo "| Kopage installer | ${KOPAGE_VERSION} |"
+            echo "| Installer sha256 | \`${INSTALLER_SHA256}\` |"
+            echo "| Source commit | \`${GITHUB_SHA}\` |"
+            echo
+            echo "## Installed packages"
+            echo
+            echo '```'
+            # dpkg-query directly as the entrypoint, not via sh -c: the format
+            # string must reach dpkg verbatim, and an intervening shell would
+            # expand ${Package}/${Version} to empty strings.
+            docker run --rm --entrypoint dpkg-query kopage:smoke-test \
+              -W -f='${Package}\t${Version}\n' | sort
+            echo '```'
+          } > IMAGE_MANIFEST.md
+
+      - name: Upload manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-manifest
+          path: IMAGE_MANIFEST.md
+          retention-days: 7
+
+  # Separated from the build so that repo write access lives in a job that only
+  # ever checks out, writes one known file, and commits. The build job cannot
+  # push commits even if something it pulls in goes bad; the worst it can do is
+  # put wrong text in the manifest it hands over.
+  commit-manifest:
+    needs: build-test-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      # Check out the branch tip rather than the SHA that triggered the build —
+      # the build takes a while and main may have moved since it started.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: image-manifest
+
+      # IMAGE_MANIFEST.md is not in this workflow's push path filter, so this
+      # commit cannot retrigger the build.
+      - name: Commit manifest
+        env:
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- IMAGE_MANIFEST.md; then
+            echo "Manifest unchanged — nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add IMAGE_MANIFEST.md
+          git commit -m "Update image manifest for $(date -u '+%Y-%m-%d') build"
+          git push origin "HEAD:${TARGET_BRANCH}"

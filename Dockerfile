@@ -2,9 +2,6 @@
 # Pin to Debian bookworm for newer security patches
 FROM php:8.2-apache-bookworm
 
-# Build argument for Kopage version
-ARG KOPAGE_VERSION=4.7.10
-
 # Cache-buster for APT layers (useful when building with buildx cache enabled)
 ARG APT_CACHE_BUSTER=0
 
@@ -279,13 +276,13 @@ COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/
 ENV SERVER_NAME="" \
     PHP_SESSION_COOKIE_SECURE="1"
 
-# Metadata labels - version matches Kopage version (kept last so version bumps
-# don't invalidate the build cache of the layers above)
+# Metadata labels (kept last so they don't invalidate the cache of the layers
+# above). No version label: the image always contains whatever Kopage currently
+# publishes, so any version baked in here would be a claim that goes stale.
+# IMAGE_MANIFEST.md records the actual contents of each published build.
 LABEL maintainer="Kopage" \
       org.opencontainers.image.title="Kopage Docker" \
-      org.opencontainers.image.description="PHP 8.2 with Apache and ionCube for Kopage CMS" \
-      org.opencontainers.image.version="${KOPAGE_VERSION}" \
-      kopage.version="${KOPAGE_VERSION}"
+      org.opencontainers.image.description="PHP 8.2 with Apache and ionCube for Kopage CMS"
 
 # Expose port 80
 EXPOSE 80
