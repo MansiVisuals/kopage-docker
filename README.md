@@ -62,7 +62,6 @@ Or build manually:
 ```bash
 docker buildx build \
   --pull \
-  --build-arg KOPAGE_VERSION=4.7.2 \
   --build-arg APT_CACHE_BUSTER="$(date -u +%Y%m%d%H%M%S)" \
   --platform linux/amd64,linux/arm64 \
   -t crypt010/kopage:latest \
@@ -70,10 +69,15 @@ docker buildx build \
 ```
 
 > **Note:** Only the `latest` tag is published, and it always contains the current
-> Kopage release plus the latest Debian security updates. `KOPAGE_VERSION` only sets
-> the image labels — it does not select which release is installed, because the
-> installer is fetched from a static URL that always serves the newest version.
-> Omit it and the image is labelled `unknown`.
+> Kopage release plus the latest Debian security updates. There is no version to
+> choose: the installer is fetched from a static URL that always serves the newest
+> release, so no build argument can select an older one.
+>
+> The `KOPAGE_VERSION` build argument therefore only sets the image labels. CI reads
+> the real version out of the downloaded installer and passes it in automatically;
+> manual builds that omit it are labelled `unknown`, which is why the example above
+> does not set it. Do not hardcode a version anywhere — it will silently go stale
+> the next time Kopage publishes.
 >
 > [`IMAGE_MANIFEST.md`](IMAGE_MANIFEST.md) records what the currently published
 > image contains — base image digest, PHP and ionCube versions, and the full
