@@ -136,13 +136,26 @@ jobs:
       # installer URL), so this file is the only place the repo says what a
       # given build contained.
       - name: Generate image manifest
+        # Passed as env rather than interpolated into the script below: a bare
+        # ${{ }} inside run: is the script-injection pattern CodeQL flags.
+        env:
+          PUSH_DIGEST: ${{ steps.push.outputs.digest }}
         run: |
           set -euo pipefail
-          base_digest="$(docker buildx imagetools inspect php:8.2-apache-bookworm \
-            --format '{{.Manifest.Digest}}' 2>/dev/null || echo 'unknown')"
+          # The index digest is the sha256 of the raw manifest bytes. Verified to
+          # match `docker image inspect --format '{{index .RepoDigests 0}}'`; the
+          # imagetools --format templates do not expose it directly.
+          base_digest="$(docker buildx imagetools inspect php:8.2-apache-bookworm --raw \
+            | sha256sum | cut -d' ' -f1)"
+          base_digest="sha256:${base_digest}"
+
           php_version="$(docker run --rm --entrypoint php kopage:smoke-test -r 'echo PHP_VERSION;')"
-          ioncube_version="$(docker run --rm --entrypoint sh kopage:smoke-test -c \
-            'php -r "echo phpversion(\"ionCube Loader\");"' 2>/dev/null || echo 'unknown')"
+
+          # phpversion() returns false for a missing extension, which echoes as an
+          # empty string with exit 0 — so an "|| echo unknown" fallback never fires.
+          ioncube_version="$(docker run --rm --entrypoint php kopage:smoke-test \
+            -r 'echo phpversion("ionCube Loader");' 2>/dev/null)"
+          [ -n "$ioncube_version" ] || ioncube_version='unknown'
 
           {
             echo "# Image manifest"
@@ -153,7 +166,7 @@ jobs:
             echo "| | |"
             echo "|---|---|"
             echo "| Built (UTC) | $(date -u '+%Y-%m-%d %H:%M:%S') |"
-            echo "| Image digest | \`${{ steps.push.outputs.digest }}\` |"
+            echo "| Image digest | \`${PUSH_DIGEST}\` |"
             echo "| Base image | \`php:8.2-apache-bookworm\` |"
             echo "| Base image digest | \`${base_digest}\` |"
             echo "| PHP | ${php_version} |"
@@ -165,8 +178,11 @@ jobs:
             echo "## Installed packages"
             echo
             echo '```'
-            docker run --rm --entrypoint sh kopage:smoke-test -c \
-              'dpkg-query -W -f="${Package}\t${Version}\n"' | sort
+            # dpkg-query directly as the entrypoint, not via sh -c: the format
+            # string must reach dpkg verbatim, and an intervening shell would
+            # expand ${Package}/${Version} to empty strings.
+            docker run --rm --entrypoint dpkg-query kopage:smoke-test \
+              -W -f='${Package}\t${Version}\n' | sort
             echo '```'
           } > IMAGE_MANIFEST.md
 
@@ -203,6 +219,8 @@ jobs:
       # IMAGE_MANIFEST.md is not in this workflow's push path filter, so this
       # commit cannot retrigger the build.
       - name: Commit manifest
+        env:
+          TARGET_BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           if git diff --quiet -- IMAGE_MANIFEST.md; then
@@ -213,4 +231,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add IMAGE_MANIFEST.md
           git commit -m "Update image manifest for $(date -u '+%Y-%m-%d') build"
-          git push origin "HEAD:${{ github.ref_name }}"
+          git push origin "HEAD:${TARGET_BRANCH}"
