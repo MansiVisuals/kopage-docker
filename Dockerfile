@@ -2,8 +2,12 @@
 # Pin to Debian bookworm for newer security patches
 FROM php:8.2-apache-bookworm
 
-# Build argument for Kopage version
-ARG KOPAGE_VERSION=4.7.10
+# Kopage version, used only for the image labels below. The installer is
+# fetched from a static URL that always serves the current release, so this
+# cannot be inferred from the Dockerfile — CI reads it out of the downloaded
+# installer and passes it in. A hardcoded default would go stale silently, so
+# builds that do not supply it are labelled "unknown" rather than wrongly.
+ARG KOPAGE_VERSION=unknown
 
 # Cache-buster for APT layers (useful when building with buildx cache enabled)
 ARG APT_CACHE_BUSTER=0

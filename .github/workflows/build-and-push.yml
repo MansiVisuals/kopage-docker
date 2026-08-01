@@ -16,15 +16,47 @@ on:
 env:
   IMAGE: crypt010/kopage
 
+# contents: write is required by the "Commit manifest" step, which records the
+# package versions of each published image back into the repo. Nothing else in
+# this workflow needs the GITHUB_TOKEN — Docker Hub uses its own secrets.
+permissions:
+  contents: write
+
+# The weekly rebuild and a push to main must not race to publish :latest.
+concurrency:
+  group: build-and-push
+  cancel-in-progress: false
+
 jobs:
   build-test-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set APT cache buster
         run: echo "APT_CACHE_BUSTER=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
+
+      # The installer is served from a static URL, so the version it reports is
+      # whatever Kopage currently publishes. Read it here rather than hardcoding
+      # it, so the image labels cannot drift away from the actual contents.
+      - name: Resolve Kopage installer version
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://www.kopage.com/installer.zip" -o /tmp/installer.zip
+          # The installer is an ionCube-encoded PHP file with a plaintext header.
+          # Extract to a file first: piping unzip into head/grep -m1 would SIGPIPE
+          # unzip and trip pipefail. LC_ALL=C keeps grep working on binary content.
+          unzip -p /tmp/installer.zip > /tmp/installer.php
+          version="$(LC_ALL=C grep -a -o -m1 -E 'Version:[[:space:]]*[0-9][0-9.]*' /tmp/installer.php \
+            | LC_ALL=C grep -o -E '[0-9][0-9.]*' || true)"
+          if [ -z "$version" ]; then
+            echo "::error::Could not read a version from installer.zip"
+            exit 1
+          fi
+          echo "KOPAGE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "INSTALLER_SHA256=$(sha256sum /tmp/installer.zip | cut -d' ' -f1)" >> "$GITHUB_ENV"
 
       - name: Set up QEMU (for arm64)
         uses: docker/setup-qemu-action@v3
@@ -48,6 +80,7 @@ jobs:
           pull: true
           build-args: |
             APT_CACHE_BUSTER=${{ env.APT_CACHE_BUSTER }}
+            KOPAGE_VERSION=${{ env.KOPAGE_VERSION }}
           tags: kopage:smoke-test
 
       - name: Smoke test image
@@ -73,11 +106,18 @@ jobs:
           # Brotli must be negotiated for clients that support it
           curl -s -D - -o /dev/null -H 'Accept-Encoding: br' http://localhost:8080/install_izkopage-setup.php \
             | grep -qi 'content-encoding: br'
-          docker logs smoke
-          docker rm -f smoke
+
+      # Runs even when the smoke test fails — that is exactly when the container
+      # logs are worth having, and the step above exits before reaching them.
+      - name: Smoke test container logs
+        if: always()
+        run: |
+          docker logs smoke 2>&1 || true
+          docker rm -f smoke >/dev/null 2>&1 || true
 
       # amd64 layers are reused from the smoke-test build (same cache buster)
       - name: Build and push multi-arch
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -86,4 +126,59 @@ jobs:
           push: true
           build-args: |
             APT_CACHE_BUSTER=${{ env.APT_CACHE_BUSTER }}
+            KOPAGE_VERSION=${{ env.KOPAGE_VERSION }}
           tags: ${{ env.IMAGE }}:latest
+
+      # Record what actually went into the published image. The Dockerfile
+      # deliberately tracks moving targets (base image tag, apt upgrade, the
+      # installer URL), so this file is the only place the repo says what a
+      # given build contained.
+      - name: Generate image manifest
+        run: |
+          set -euo pipefail
+          base_digest="$(docker buildx imagetools inspect php:8.2-apache-bookworm \
+            --format '{{.Manifest.Digest}}' 2>/dev/null || echo 'unknown')"
+          php_version="$(docker run --rm --entrypoint php kopage:smoke-test -r 'echo PHP_VERSION;')"
+          ioncube_version="$(docker run --rm --entrypoint sh kopage:smoke-test -c \
+            'php -r "echo phpversion(\"ionCube Loader\");"' 2>/dev/null || echo 'unknown')"
+
+          {
+            echo "# Image manifest"
+            echo
+            echo "Generated automatically by \`.github/workflows/build-and-push.yml\`."
+            echo "Describes the contents of the most recently published \`${IMAGE}:latest\`."
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Built (UTC) | $(date -u '+%Y-%m-%d %H:%M:%S') |"
+            echo "| Image digest | \`${{ steps.push.outputs.digest }}\` |"
+            echo "| Base image | \`php:8.2-apache-bookworm\` |"
+            echo "| Base image digest | \`${base_digest}\` |"
+            echo "| PHP | ${php_version} |"
+            echo "| ionCube Loader | ${ioncube_version} |"
+            echo "| Kopage installer | ${KOPAGE_VERSION} |"
+            echo "| Installer sha256 | \`${INSTALLER_SHA256}\` |"
+            echo "| Source commit | \`${GITHUB_SHA}\` |"
+            echo
+            echo "## Installed packages"
+            echo
+            echo '```'
+            docker run --rm --entrypoint sh kopage:smoke-test -c \
+              'dpkg-query -W -f="${Package}\t${Version}\n"' | sort
+            echo '```'
+          } > IMAGE_MANIFEST.md
+
+      # IMAGE_MANIFEST.md is not in this workflow's push path filter, so this
+      # commit cannot retrigger the build.
+      - name: Commit manifest
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- IMAGE_MANIFEST.md; then
+            echo "Manifest unchanged — nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add IMAGE_MANIFEST.md
+          git commit -m "Update image manifest for $(date -u '+%Y-%m-%d') build"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

@@ -62,14 +62,23 @@ Or build manually:
 ```bash
 docker buildx build \
   --pull \
-  --build-arg KOPAGE_VERSION=4.7.0 \
+  --build-arg KOPAGE_VERSION=4.7.2 \
   --build-arg APT_CACHE_BUSTER="$(date -u +%Y%m%d%H%M%S)" \
   --platform linux/amd64,linux/arm64 \
   -t crypt010/kopage:latest \
   .
 ```
 
-> **Note:** Only the `latest` tag is published. The Kopage version is embedded in the image labels.
+> **Note:** Only the `latest` tag is published, and it always contains the current
+> Kopage release plus the latest Debian security updates. `KOPAGE_VERSION` only sets
+> the image labels — it does not select which release is installed, because the
+> installer is fetched from a static URL that always serves the newest version.
+> Omit it and the image is labelled `unknown`.
+>
+> [`IMAGE_MANIFEST.md`](IMAGE_MANIFEST.md) records what the currently published
+> image contains — base image digest, PHP and ionCube versions, and the full
+> Debian package list. CI regenerates and commits it on every build, so the
+> weekly package updates are visible in this repo's history.
 
 ## PHP Configuration
 
