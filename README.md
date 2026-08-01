@@ -70,14 +70,15 @@ docker buildx build \
 
 > **Note:** Only the `latest` tag is published, and it always contains the current
 > Kopage release plus the latest Debian security updates. There is no version to
-> choose: the installer is fetched from a static URL that always serves the newest
-> release, so no build argument can select an older one.
+> choose or pass in — the installer is fetched from a static URL that always serves
+> the newest release, so the image carries no version label and nothing here should
+> hardcode one.
 >
-> The `KOPAGE_VERSION` build argument therefore only sets the image labels. CI reads
-> the real version out of the downloaded installer and passes it in automatically;
-> manual builds that omit it are labelled `unknown`, which is why the example above
-> does not set it. Do not hardcode a version anywhere — it will silently go stale
-> the next time Kopage publishes.
+> [`IMAGE_MANIFEST.md`](IMAGE_MANIFEST.md) records what the currently published image
+> actually contains — image and base image digests, PHP and ionCube versions, the
+> Kopage installer version and checksum, and the full Debian package list. CI
+> regenerates and commits it on every build, so the weekly package updates are
+> visible in this repo's history.
 >
 > [`IMAGE_MANIFEST.md`](IMAGE_MANIFEST.md) records what the currently published
 > image contains — base image digest, PHP and ionCube versions, and the full

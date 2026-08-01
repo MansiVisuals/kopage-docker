@@ -2,13 +2,6 @@
 # Pin to Debian bookworm for newer security patches
 FROM php:8.2-apache-bookworm
 
-# Kopage version, used only for the image labels below. The installer is
-# fetched from a static URL that always serves the current release, so this
-# cannot be inferred from the Dockerfile — CI reads it out of the downloaded
-# installer and passes it in. A hardcoded default would go stale silently, so
-# builds that do not supply it are labelled "unknown" rather than wrongly.
-ARG KOPAGE_VERSION=unknown
-
 # Cache-buster for APT layers (useful when building with buildx cache enabled)
 ARG APT_CACHE_BUSTER=0
 
@@ -283,13 +276,13 @@ COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/
 ENV SERVER_NAME="" \
     PHP_SESSION_COOKIE_SECURE="1"
 
-# Metadata labels - version matches Kopage version (kept last so version bumps
-# don't invalidate the build cache of the layers above)
+# Metadata labels (kept last so they don't invalidate the cache of the layers
+# above). No version label: the image always contains whatever Kopage currently
+# publishes, so any version baked in here would be a claim that goes stale.
+# IMAGE_MANIFEST.md records the actual contents of each published build.
 LABEL maintainer="Kopage" \
       org.opencontainers.image.title="Kopage Docker" \
-      org.opencontainers.image.description="PHP 8.2 with Apache and ionCube for Kopage CMS" \
-      org.opencontainers.image.version="${KOPAGE_VERSION}" \
-      kopage.version="${KOPAGE_VERSION}"
+      org.opencontainers.image.description="PHP 8.2 with Apache and ionCube for Kopage CMS"
 
 # Expose port 80
 EXPOSE 80

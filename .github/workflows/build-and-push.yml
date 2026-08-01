@@ -39,8 +39,8 @@ jobs:
         run: echo "APT_CACHE_BUSTER=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
 
       # The installer is served from a static URL, so the version it reports is
-      # whatever Kopage currently publishes. Read it here rather than hardcoding
-      # it, so the image labels cannot drift away from the actual contents.
+      # whatever Kopage currently publishes. Read it for the manifest below —
+      # this is a record of what was built, never an input to the build.
       - name: Resolve Kopage installer version
         run: |
           set -euo pipefail
@@ -80,7 +80,6 @@ jobs:
           pull: true
           build-args: |
             APT_CACHE_BUSTER=${{ env.APT_CACHE_BUSTER }}
-            KOPAGE_VERSION=${{ env.KOPAGE_VERSION }}
           tags: kopage:smoke-test
 
       - name: Smoke test image
@@ -126,7 +125,6 @@ jobs:
           push: true
           build-args: |
             APT_CACHE_BUSTER=${{ env.APT_CACHE_BUSTER }}
-            KOPAGE_VERSION=${{ env.KOPAGE_VERSION }}
           tags: ${{ env.IMAGE }}:latest
 
       # Record what actually went into the published image. The Dockerfile
