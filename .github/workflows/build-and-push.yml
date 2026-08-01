@@ -16,11 +16,11 @@ on:
 env:
   IMAGE: crypt010/kopage
 
-# contents: write is required by the "Commit manifest" step, which records the
-# package versions of each published image back into the repo. Nothing else in
-# this workflow needs the GITHUB_TOKEN — Docker Hub uses its own secrets.
+# Read-only by default. Only the commit-manifest job below widens this, so the
+# token that can write to the repo never exists in the job that builds the image
+# and runs third-party code.
 permissions:
-  contents: write
+  contents: read
 
 # The weekly rebuild and a push to main must not race to publish :latest.
 concurrency:
@@ -31,6 +31,10 @@ jobs:
   build-test-push:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    # Builds the image, runs the installer, and pushes to Docker Hub. Holds the
+    # Docker Hub secrets but no repo write access.
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -166,6 +170,36 @@ jobs:
             echo '```'
           } > IMAGE_MANIFEST.md
 
+      - name: Upload manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-manifest
+          path: IMAGE_MANIFEST.md
+          retention-days: 7
+
+  # Separated from the build so that repo write access lives in a job that only
+  # ever checks out, writes one known file, and commits. The build job cannot
+  # push commits even if something it pulls in goes bad; the worst it can do is
+  # put wrong text in the manifest it hands over.
+  commit-manifest:
+    needs: build-test-push
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      # Check out the branch tip rather than the SHA that triggered the build —
+      # the build takes a while and main may have moved since it started.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: image-manifest
+
       # IMAGE_MANIFEST.md is not in this workflow's push path filter, so this
       # commit cannot retrigger the build.
       - name: Commit manifest
@@ -179,4 +213,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add IMAGE_MANIFEST.md
           git commit -m "Update image manifest for $(date -u '+%Y-%m-%d') build"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:${{ github.ref_name }}"
