@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-08-01 13:52:01 |
-| Image digest | `sha256:ea6a6802d66e1d61cff6cd38ce540b53a245b1848c661c43c78953756a563449` |
+| Built (UTC) | 2026-08-03 06:19:10 |
+| Image digest | `sha256:5b5e1fa8375a28603c87eb484d133d0c00f01928eee71b6c9cc49e8fb03d2fcc` |
 | Base image | `php:8.2-apache-bookworm` |
 | Base image digest | `sha256:28ee2d935ae549987f0fb5dee097ea7b354bed24a7575ca3dd2ae50981e43d74` |
 | PHP | 8.2.33 |
 | ionCube Loader | 15.5.0 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `eba136d19c0d6d93c4f48bb91af77f3049d52f47` |
+| Source commit | `22bb8706f4cdb7e7bf20b8e97c94c3c3fcd40f36` |
 
 ## Installed packages
 
