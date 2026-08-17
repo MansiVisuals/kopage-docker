@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-08-10 04:33:08 |
-| Image digest | `sha256:9ac669878d7c3a9efb8fb5243df38dcb379be2e0a99dd9aa501f3127cb2c0f87` |
+| Built (UTC) | 2026-08-17 03:49:41 |
+| Image digest | `sha256:82f2193202374833d11ddbadcba48db3e8b220313f496f8750c57184ac3db6b5` |
 | Base image | `php:8.2-apache-bookworm` |
 | Base image digest | `sha256:6881882e17f94400246345313750a8e417525ca71d659546b8baf3a2a1ed245b` |
 | PHP | 8.2.33 |
 | ionCube Loader | 15.5.0 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `46d22501c35e2766b5946bd3f2bd44e61b6be17e` |
+| Source commit | `fef1d7f9607b0f0f52423c7607425506ccadb150` |
 
 ## Installed packages
 
@@ -47,9 +47,9 @@ hostname	3.23+nmu1
 init-system-helpers	1.65.2+deb12u1
 libacl1	2.3.1-3
 libapr1	1.7.2-3+deb12u1
-libaprutil1	1.6.3-1
-libaprutil1-dbd-sqlite3	1.6.3-1
-libaprutil1-ldap	1.6.3-1
+libaprutil1	1.6.3-1+deb12u1
+libaprutil1-dbd-sqlite3	1.6.3-1+deb12u1
+libaprutil1-ldap	1.6.3-1+deb12u1
 libapt-pkg6.0	2.6.1
 libargon2-1	0~20171227-0.3+deb12u1
 libasan8	12.2.0-14+deb12u1
@@ -170,7 +170,7 @@ sqlite3	3.40.1-2+deb12u2
 sysvinit-utils	3.06-4
 tar	1.34+dfsg-1.2+deb12u1
 tzdata	2026b-0+deb12u1
-unzip	6.0-28
+unzip	6.0-28+deb12u1
 usr-is-merged	37~deb12u1
 util-linux	2.38.1-5+deb12u3
 util-linux-extra	2.38.1-5+deb12u3
