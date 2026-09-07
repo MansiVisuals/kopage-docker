@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-08-31 09:14:58 |
-| Image digest | `sha256:13a1fa319d35e0c68e7366ddf22ba49dbd3b1bb88c93c6aa136f87644ac4d334` |
+| Built (UTC) | 2026-09-07 07:51:20 |
+| Image digest | `sha256:ddc9f15a48fcc3ecab9cbd5a2e2767f47f34520b6f2e775207c3b56585ecaa19` |
 | Base image | `php:8.2-apache-bookworm` |
 | Base image digest | `sha256:d2d7559c815220accfb1b48704a1ce59623aa21f7d2dcc9bff13838749a678d4` |
 | PHP | 8.2.33 |
 | ionCube Loader | 15.5.0 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `0c153725f927e298948a6e7c38d2646eb36f1295` |
+| Source commit | `930055b66fcf91d7bcae3dd1928467e06cec4772` |
 
 ## Installed packages
 
@@ -71,7 +71,7 @@ libcurl4	7.88.1-10+deb12u15
 libdb5.3	5.3.28+dfsg2-1
 libdebconfclient0	0.270
 libdpkg-perl	1.21.23
-libexpat1	2.5.0-1+deb12u2
+libexpat1	2.5.0-1+deb12u3
 libext2fs2	1.47.0-2+b2
 libffi8	3.4.4-1
 libfreetype6	2.12.1+dfsg-5+deb12u4
@@ -113,7 +113,7 @@ libpam-modules	1.5.2-6+deb12u2
 libpam-modules-bin	1.5.2-6+deb12u2
 libpam-runtime	1.5.2-6+deb12u2
 libpam0g	1.5.2-6+deb12u2
-libpcre2-8-0	10.42-1
+libpcre2-8-0	10.42-1+deb12u1
 libperl5.36	5.36.0-7+deb12u3
 libpkgconf3	1.8.1-1
 libpng16-16	1.6.39-2+deb12u5
@@ -133,7 +133,7 @@ libsmartcols1	2.38.1-5+deb12u3
 libsodium23	1.0.18-1+deb12u1
 libsqlite3-0	3.40.1-2+deb12u2
 libss2	1.47.0-2+b2
-libssh2-1	1.10.0-3+b1
+libssh2-1	1.10.0-3+deb12u1
 libssl3	3.0.20-1~deb12u2
 libstdc++6	12.2.0-14+deb12u1
 libsystemd0	252.39-1~deb12u2
