@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-09-14 08:29:39 |
-| Image digest | `sha256:f1a2d3255c3737268cadca575661f1ddfff0fff91fa605813f7268e6b338d84a` |
+| Built (UTC) | 2026-09-21 08:32:04 |
+| Image digest | `sha256:0656ab15ed5d41db0735ff15f2e860983b818706589314ac38837d26d37f2008` |
 | Base image | `php:8.2-apache-bookworm` |
-| Base image digest | `sha256:d2d7559c815220accfb1b48704a1ce59623aa21f7d2dcc9bff13838749a678d4` |
+| Base image digest | `sha256:821cbbf74ea4c407b6b11d787ea767349c47423576edfb6e857a9186d14afa29` |
 | PHP | 8.2.33 |
-| ionCube Loader | 15.5.0 |
+| ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `b634bb2ebfe5d632d3741e31c9c98b463032f861` |
+| Source commit | `e68ce18153f02b60a167472ef4670b8871067e2b` |
 
 ## Installed packages
 
@@ -99,7 +99,7 @@ libldap-2.5-0	2.5.13+dfsg-5
 liblsan0	12.2.0-14+deb12u1
 liblua5.3-0	5.3.6-2
 liblz4-1	1.9.4-1
-liblzma5	5.4.1-1+deb12u1
+liblzma5	5.4.1-1+deb12u2
 libmagic-mgc	1:5.44-3
 libmagic1	1:5.44-3
 libmd0	1.0.4-2
@@ -174,6 +174,6 @@ unzip	6.0-28+deb12u1
 usr-is-merged	37~deb12u1
 util-linux	2.38.1-5+deb12u3
 util-linux-extra	2.38.1-5+deb12u3
-xz-utils	5.4.1-1+deb12u1
+xz-utils	5.4.1-1+deb12u2
 zlib1g	1:1.2.13.dfsg-1
 ```
