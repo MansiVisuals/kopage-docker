@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-09-21 08:32:04 |
-| Image digest | `sha256:0656ab15ed5d41db0735ff15f2e860983b818706589314ac38837d26d37f2008` |
+| Built (UTC) | 2026-09-28 09:17:28 |
+| Image digest | `sha256:4aaecffa55eb2fd016c010648f1b574a1eb1c7747644e76879b4b363c998211d` |
 | Base image | `php:8.2-apache-bookworm` |
-| Base image digest | `sha256:821cbbf74ea4c407b6b11d787ea767349c47423576edfb6e857a9186d14afa29` |
-| PHP | 8.2.33 |
+| Base image digest | `sha256:df31a88b335ad0eb4fce42de9fd9363a9c62f5f44522d12dab99fdef67e688c5` |
+| PHP | 8.2.34 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `e68ce18153f02b60a167472ef4670b8871067e2b` |
+| Source commit | `9af2c656f22adf84e41c614982cfa19b8d6769ed` |
 
 ## Installed packages
 
@@ -134,7 +134,7 @@ libsodium23	1.0.18-1+deb12u1
 libsqlite3-0	3.40.1-2+deb12u2
 libss2	1.47.0-2+b2
 libssh2-1	1.10.0-3+deb12u1
-libssl3	3.0.20-1~deb12u2
+libssl3	3.0.22-1~deb12u1
 libstdc++6	12.2.0-14+deb12u1
 libsystemd0	252.39-1~deb12u2
 libtasn1-6	4.19.0-2+deb12u1
@@ -156,7 +156,7 @@ media-types	10.0.0
 mount	2.38.1-5+deb12u3
 ncurses-base	6.4-4
 ncurses-bin	6.4-4
-openssl	3.0.20-1~deb12u2
+openssl	3.0.22-1~deb12u1
 passwd	1:4.13+dfsg1-1+deb12u2
 perl	5.36.0-7+deb12u3
 perl-base	5.36.0-7+deb12u3
@@ -169,7 +169,7 @@ sed	4.9-1+deb12u1
 sqlite3	3.40.1-2+deb12u2
 sysvinit-utils	3.06-4
 tar	1.34+dfsg-1.2+deb12u1
-tzdata	2026b-0+deb12u1
+tzdata	2026c-0+deb12u1
 unzip	6.0-28+deb12u1
 usr-is-merged	37~deb12u1
 util-linux	2.38.1-5+deb12u3
