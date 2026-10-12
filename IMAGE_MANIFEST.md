@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-10-05 09:56:32 |
-| Image digest | `sha256:ac6a04e05215d6770293bd08ad15294bf28716d2aacd822417f1db77d91ada20` |
+| Built (UTC) | 2026-10-12 10:07:39 |
+| Image digest | `sha256:458986aa3ba3c0feafa588423a0cbbe8f66c7394df94ca6ff6891db5057aff81` |
 | Base image | `php:8.2-apache-bookworm` |
-| Base image digest | `sha256:df31a88b335ad0eb4fce42de9fd9363a9c62f5f44522d12dab99fdef67e688c5` |
+| Base image digest | `sha256:6d6e8fa0373692f588cf9f871f141eb6eba14a9260c346ffe7c93c51646a633f` |
 | PHP | 8.2.34 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `bb18fb9c6da476b0f9c14e9779cae747233ab673` |
+| Source commit | `dcaf58aed1994be6e07911b42cf0e09e77759671` |
 
 ## Installed packages
 
@@ -116,7 +116,7 @@ libpam0g	1.5.2-6+deb12u2
 libpcre2-8-0	10.42-1+deb12u2
 libperl5.36	5.36.0-7+deb12u4
 libpkgconf3	1.8.1-1
-libpng16-16	1.6.39-2+deb12u5
+libpng16-16	1.6.39-2+deb12u6
 libproc2-0	2:4.0.2-3
 libpsl5	0.21.2-1
 libquadmath0	12.2.0-14+deb12u1
