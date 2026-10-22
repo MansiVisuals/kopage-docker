@@ -142,10 +142,14 @@ jobs:
           PUSH_DIGEST: ${{ steps.push.outputs.digest }}
         run: |
           set -euo pipefail
+          # Read from the Dockerfile so the manifest cannot name a stale base
+          base_image="$(awk '/^FROM /{print $2; exit}' Dockerfile)"
+          [ -n "$base_image" ]
+
           # The index digest is the sha256 of the raw manifest bytes. Verified to
           # match `docker image inspect --format '{{index .RepoDigests 0}}'`; the
           # imagetools --format templates do not expose it directly.
-          base_digest="$(docker buildx imagetools inspect php:8.2-apache-bookworm --raw \
+          base_digest="$(docker buildx imagetools inspect "$base_image" --raw \
             | sha256sum | cut -d' ' -f1)"
           base_digest="sha256:${base_digest}"
 
@@ -167,7 +171,7 @@ jobs:
             echo "|---|---|"
             echo "| Built (UTC) | $(date -u '+%Y-%m-%d %H:%M:%S') |"
             echo "| Image digest | \`${PUSH_DIGEST}\` |"
-            echo "| Base image | \`php:8.2-apache-bookworm\` |"
+            echo "| Base image | \`${base_image}\` |"
             echo "| Base image digest | \`${base_digest}\` |"
             echo "| PHP | ${php_version} |"
             echo "| ionCube Loader | ${ioncube_version} |"
