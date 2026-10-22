@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-10-19 08:26:33 |
-| Image digest | `sha256:f429c15002600d70681ee912bdb6208f88187b0e5076257769da26d136398dfc` |
+| Built (UTC) | 2026-10-22 13:13:43 |
+| Image digest | `sha256:f2c1efb61bba7f5bca8eff4b4886d29d550657d1eed70396b65c28c6f1fdd3ed` |
 | Base image | `php:8.2-apache-bookworm` |
-| Base image digest | `sha256:6d6e8fa0373692f588cf9f871f141eb6eba14a9260c346ffe7c93c51646a633f` |
-| PHP | 8.2.34 |
+| Base image digest | `sha256:5714c8607608e50d880a5f222fab556edecd4a11b9c50c81fce1c7932c1cf604` |
+| PHP | 8.2.35 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `643db7abc73fcc08855f89195d81996f9da47736` |
+| Source commit | `17c1c5a949102b599ffd5c942ef52b53be47530b` |
 
 ## Installed packages
 
@@ -29,7 +29,7 @@ base-passwd	3.6.1
 bash	5.2.15-2+b13
 bsdutils	1:2.38.1-5+deb12u3
 bzip2	1.0.8-5+b1
-ca-certificates	20250419~deb12u1
+ca-certificates	20250419~deb12u2
 coreutils	9.1-1
 dash	0.5.12-2
 debconf	1.5.82
@@ -71,7 +71,7 @@ libcurl4	7.88.1-10+deb12u15
 libdb5.3	5.3.28+dfsg2-1
 libdebconfclient0	0.270
 libdpkg-perl	1.21.23
-libexpat1	2.5.0-1+deb12u4
+libexpat1	2.5.0-1+deb12u5
 libext2fs2	1.47.0-2+b2
 libffi8	3.4.4-1
 libfreetype6	2.12.1+dfsg-5+deb12u4
