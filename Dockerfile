@@ -1,6 +1,7 @@
 # Base image: PHP 8.2 + Apache (official, multi-architecture)
-# Pin to Debian bookworm for newer security patches
-FROM php:8.2-apache-bookworm
+# Pin to Debian trixie: its Apache, OpenSSL and util-linux are clear of the
+# critical/high CVEs that bookworm has no fixes for
+FROM php:8.2-apache-trixie
 
 # Cache-buster for APT layers (useful when building with buildx cache enabled)
 ARG APT_CACHE_BUSTER=0
@@ -18,7 +19,7 @@ RUN set -eux; \
     apt-get install -y --no-install-recommends \
         libpng-dev \
         libjpeg-dev \
-        libfreetype6-dev \
+        libfreetype-dev \
         libzip-dev \
         unzip \
         sqlite3 \
@@ -260,11 +261,20 @@ RUN set -eux; \
 # Pre-download Kopage installer, then remove build-time packages not needed at runtime
 RUN set -eux; \
     curl -fsSL "https://www.kopage.com/installer.zip" -o /usr/local/kopage-installer.zip; \
-    for pkg in autoconf binutils binutils-common cpp cpp-12 curl dpkg-dev file \
-               g++ g++-12 gcc gcc-12 libc6-dev m4 make patch pkg-config re2c; do \
+    # Trixie ships the compiler itself in per-architecture packages
+    # (cpp-14-aarch64-linux-gnu, ...). Read the triplet before dpkg-dev is purged.
+    triplet="$(dpkg-architecture -qDEB_HOST_GNU_TYPE | tr _ -)"; \
+    # Purging g++ flips cpp-14-<triplet>, libgcc-14-dev, pkgconf and
+    # libdpkg-perl to manually installed, so autoremove alone would keep them
+    for pkg in autoconf binutils binutils-common cpp cpp-14 "cpp-$triplet" "cpp-14-$triplet" \
+               curl dpkg-dev file g++ g++-14 gcc gcc-14 libc6-dev libdpkg-perl libgcc-14-dev \
+               m4 make patch pkg-config pkgconf re2c; do \
         apt-get purge -y "$pkg" 2>/dev/null || true; \
     done; \
     apt-get -y autoremove --purge; \
+    # The loop skips names that do not exist, so a base image with a newer GCC
+    # would silently keep its compiler; fail the build instead
+    [ ! -e /usr/libexec/gcc ]; \
     apt-get update; \
     apt-get upgrade -y --no-install-recommends; \
     rm -rf /var/lib/apt/lists/*
