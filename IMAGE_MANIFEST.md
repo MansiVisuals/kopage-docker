@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-10-22 21:12:28 |
-| Image digest | `sha256:18986c40e1ca583c0def820d8d07799b4b4c8fb293d64722370c9791b83beb68` |
+| Built (UTC) | 2026-10-26 08:26:01 |
+| Image digest | `sha256:b5a44d03052b656e8baf8d827dc4af9e1116ada95a4708a6e9254ec7f417f295` |
 | Base image | `php:8.2-apache-trixie` |
-| Base image digest | `sha256:1309a2299d4dfc1d5cdf62291469b84ec4626021d818cef4cb30e79e7e10e6cc` |
+| Base image digest | `sha256:1dcd13aa67697127a140a7d303ab955c923098c39d525ecd728f2e8afb4d1546` |
 | PHP | 8.2.35 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `01983a27ae8e52af4aae172ed6827f6434b22e3a` |
+| Source commit | `f5aa6ddf60aebfbe38bd635ae15ab87882836230` |
 
 ## Installed packages
 
@@ -53,7 +53,7 @@ libattr1	1:2.5.2-3
 libaudit-common	1:4.0.2-2+deb13u1
 libaudit1	1:4.0.2-2+deb13u1
 libblkid1	2.41.5-0+deb13u1
-libbrotli1	1.1.0-2+b7
+libbrotli1	1.1.0-2+deb13u1
 libbsd0	0.12.2-2
 libbz2-1.0	1.0.8-6
 libc-bin	2.41-12+deb13u4
