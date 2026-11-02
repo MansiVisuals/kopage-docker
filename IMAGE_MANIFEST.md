@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-10-26 08:26:01 |
-| Image digest | `sha256:b5a44d03052b656e8baf8d827dc4af9e1116ada95a4708a6e9254ec7f417f295` |
+| Built (UTC) | 2026-11-02 10:29:53 |
+| Image digest | `sha256:4f9df7f2388d718e8b16776ddc6caa4cf56d4be4e1ccb19c51f08bb8499ccd93` |
 | Base image | `php:8.2-apache-trixie` |
-| Base image digest | `sha256:1dcd13aa67697127a140a7d303ab955c923098c39d525ecd728f2e8afb4d1546` |
+| Base image digest | `sha256:89e5f7bde208a146519d12100c11e71a1d0119a10703cfc454d1bdca274147ec` |
 | PHP | 8.2.35 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `f5aa6ddf60aebfbe38bd635ae15ab87882836230` |
+| Source commit | `78c7cf3b6d65808ae473dd7c4af432e143f2eac5` |
 
 ## Installed packages
 
@@ -155,7 +155,7 @@ sqlite3	3.46.1-7+deb13u2
 sqv	1.3.0-3+b2
 sysvinit-utils	3.14-4
 tar	1.35+dfsg-3.1
-tzdata	2026e-0+deb13u1
+tzdata	2026f-0+deb13u1
 unzip	6.0-29+deb13u1
 util-linux	2.41.5-0+deb13u1
 xz-utils	5.8.1-1+deb13u2
