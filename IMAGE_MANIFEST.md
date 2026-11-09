@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-11-02 10:29:53 |
-| Image digest | `sha256:4f9df7f2388d718e8b16776ddc6caa4cf56d4be4e1ccb19c51f08bb8499ccd93` |
+| Built (UTC) | 2026-11-09 10:46:36 |
+| Image digest | `sha256:500382d543d3e225e774a9843d44533745d4a3475b42dc5a440ad35bf1c9d606` |
 | Base image | `php:8.2-apache-trixie` |
-| Base image digest | `sha256:89e5f7bde208a146519d12100c11e71a1d0119a10703cfc454d1bdca274147ec` |
+| Base image digest | `sha256:1bc4115a5528326425f1f59846fc7879d7d3843da9905b42931755ac4d4b29bc` |
 | PHP | 8.2.35 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `78c7cf3b6d65808ae473dd7c4af432e143f2eac5` |
+| Source commit | `77f7bae4599650638a4fe478de31cf9a8e3fb98c` |
 
 ## Installed packages
 
@@ -23,7 +23,7 @@ apache2	2.4.69-1~deb13u1
 apache2-bin	2.4.69-1~deb13u1
 apache2-data	2.4.69-1~deb13u1
 apache2-utils	2.4.69-1~deb13u1
-apt	3.0.3
+apt	3.0.4
 base-files	13.8+deb13u7
 base-passwd	3.6.7
 bash	5.2.37-2+b10
@@ -47,7 +47,7 @@ libapr1t64	1.7.5-1
 libaprutil1-dbd-sqlite3	1.6.3-3+deb13u1
 libaprutil1-ldap	1.6.3-3+deb13u1
 libaprutil1t64	1.6.3-3+deb13u1
-libapt-pkg7.0	3.0.3
+libapt-pkg7.0	3.0.4
 libargon2-1	0~20190702+dfsg-4+b2
 libattr1	1:2.5.2-3
 libaudit-common	1:4.0.2-2+deb13u1
@@ -159,5 +159,5 @@ tzdata	2026f-0+deb13u1
 unzip	6.0-29+deb13u1
 util-linux	2.41.5-0+deb13u1
 xz-utils	5.8.1-1+deb13u2
-zlib1g	1:1.3.dfsg+really1.3.1-1+b1
+zlib1g	1:1.3.dfsg+really1.3.1-1+deb13u1
 ```
