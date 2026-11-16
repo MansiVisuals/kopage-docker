@@ -5,24 +5,24 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-11-09 10:46:36 |
-| Image digest | `sha256:500382d543d3e225e774a9843d44533745d4a3475b42dc5a440ad35bf1c9d606` |
+| Built (UTC) | 2026-11-16 10:31:54 |
+| Image digest | `sha256:11f891a3dba4e03813e807dd405d10cd2b8b4886c7ba32f1e1a9940ea7765c2e` |
 | Base image | `php:8.2-apache-trixie` |
 | Base image digest | `sha256:1bc4115a5528326425f1f59846fc7879d7d3843da9905b42931755ac4d4b29bc` |
 | PHP | 8.2.35 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `77f7bae4599650638a4fe478de31cf9a8e3fb98c` |
+| Source commit | `35e33d2319184d916f35f7c98971521a032c9bd7` |
 
 ## Installed packages
 
 ```
 adduser	3.152
-apache2	2.4.69-1~deb13u1
-apache2-bin	2.4.69-1~deb13u1
-apache2-data	2.4.69-1~deb13u1
-apache2-utils	2.4.69-1~deb13u1
+apache2	2.4.71-1~deb13u1
+apache2-bin	2.4.71-1~deb13u1
+apache2-data	2.4.71-1~deb13u1
+apache2-utils	2.4.71-1~deb13u1
 apt	3.0.4
 base-files	13.8+deb13u7
 base-passwd	3.6.7
