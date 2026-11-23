@@ -5,15 +5,15 @@ Describes the contents of the most recently published `crypt010/kopage:latest`.
 
 | | |
 |---|---|
-| Built (UTC) | 2026-11-16 10:31:54 |
-| Image digest | `sha256:11f891a3dba4e03813e807dd405d10cd2b8b4886c7ba32f1e1a9940ea7765c2e` |
+| Built (UTC) | 2026-11-23 11:42:45 |
+| Image digest | `sha256:02f1c762081ea6520629c4464213c9dd81c9f8c993dfb74ee6701b7d2de94606` |
 | Base image | `php:8.2-apache-trixie` |
-| Base image digest | `sha256:1bc4115a5528326425f1f59846fc7879d7d3843da9905b42931755ac4d4b29bc` |
-| PHP | 8.2.35 |
+| Base image digest | `sha256:b90981025fa445ad7784981110e9423656409177f761eb67b13dc98861049d00` |
+| PHP | 8.2.36 |
 | ionCube Loader | 15.5.1 |
 | Kopage installer | 4.7.2 |
 | Installer sha256 | `0f26ecd276f4a336bd585d71e3d5ed53d1f98832e95d916a46efda98c5c5dcc7` |
-| Source commit | `35e33d2319184d916f35f7c98971521a032c9bd7` |
+| Source commit | `b80e2f22ac1f6b49e46b12622e178e178a2913b2` |
 
 ## Installed packages
 
@@ -24,7 +24,7 @@ apache2-bin	2.4.71-1~deb13u1
 apache2-data	2.4.71-1~deb13u1
 apache2-utils	2.4.71-1~deb13u1
 apt	3.0.4
-base-files	13.8+deb13u7
+base-files	13.8+deb13u8
 base-passwd	3.6.7
 bash	5.2.37-2+b10
 bsdutils	1:2.41.5-0+deb13u1
@@ -56,8 +56,8 @@ libblkid1	2.41.5-0+deb13u1
 libbrotli1	1.1.0-2+deb13u1
 libbsd0	0.12.2-2
 libbz2-1.0	1.0.8-6
-libc-bin	2.41-12+deb13u4
-libc6	2.41-12+deb13u4
+libc-bin	2.41-12+deb13u5
+libc6	2.41-12+deb13u5
 libcap-ng0	0.8.5-4+b1
 libcap2	1:2.75-10+deb13u1+b3
 libcom-err2	1.47.2-3+b12
@@ -68,22 +68,22 @@ libdb5.3t64	5.3.28+dfsg2-9
 libdebconfclient0	0.280
 libexpat1	2.9.0-1~deb13u1
 libffi8	3.4.8-2
-libfreetype6	2.13.3+dfsg-1+deb13u1
+libfreetype6	2.13.3+dfsg-1+deb13u2
 libgcc-s1	14.2.0-19
 libgdbm-compat4t64	1.24-2
 libgdbm6t64	1.24-2
 libgmp10	2:6.3.0+dfsg-3
 libgnutls30t64	3.8.9-3+deb13u4
 libgomp1	14.2.0-19
-libgssapi-krb5-2	1.21.3-5+deb13u1
+libgssapi-krb5-2	1.21.3-5+deb13u2
 libhogweed6t64	3.10.1-1
 libidn2-0	2.3.8-2
 libjansson4	2.14-2+b3
 libjpeg62-turbo	1:2.1.5-4
-libk5crypto3	1.21.3-5+deb13u1
+libk5crypto3	1.21.3-5+deb13u2
 libkeyutils1	1.6.3-6
-libkrb5-3	1.21.3-5+deb13u1
-libkrb5support0	1.21.3-5+deb13u1
+libkrb5-3	1.21.3-5+deb13u2
+libkrb5support0	1.21.3-5+deb13u2
 liblastlog2-2	2.41.5-0+deb13u1
 libldap2	2.6.10+dfsg-1
 liblua5.4-0	5.4.7-1+b2
@@ -95,7 +95,7 @@ libmd0	1.1.0-2+b1
 libmount1	2.41.5-0+deb13u1
 libncursesw6	6.5+20250216-2
 libnettle8t64	3.10.1-1
-libnghttp2-14	1.64.0-1.1+deb13u1
+libnghttp2-14	1.64.0-1.1+deb13u2
 libnghttp3-9	1.8.0-1
 libonig5	6.9.9-1+b1
 libp11-kit0	0.25.5-3
@@ -122,7 +122,7 @@ libsmartcols1	2.41.5-0+deb13u1
 libsodium23	1.0.18-1+deb13u1
 libsqlite3-0	3.46.1-7+deb13u2
 libssh2-1t64	1.11.1-1+deb13u2
-libssl3t64	3.5.7-1~deb13u3
+libssl3t64	3.5.9-1~deb13u1
 libstdc++6	14.2.0-19
 libsystemd0	257.13-1~deb13u1
 libtasn1-6	4.20.0-2+deb13u1
@@ -141,8 +141,8 @@ media-types	13.0.0
 mount	2.41.5-0+deb13u1
 ncurses-base	6.5+20250216-2
 ncurses-bin	6.5+20250216-2
-openssl	3.5.7-1~deb13u3
-openssl-provider-legacy	3.5.7-1~deb13u3
+openssl	3.5.9-1~deb13u1
+openssl-provider-legacy	3.5.9-1~deb13u1
 passwd	1:4.17.4-2
 perl	5.40.1-6+deb13u1
 perl-base	5.40.1-6+deb13u1
