@@ -160,11 +160,13 @@ RUN set -eux; \
 RUN set -eux; \
     a2enmod rewrite headers; \
     \
-    # Configure RemoteIP for proper client IP detection behind proxies
+    # Configure RemoteIP for proper client IP detection behind proxies.
+    # RemoteIPHeader takes a single header and the last one wins, so only
+    # X-Forwarded-For is set: Caddy, Traefik, nginx and Cloudflare all send it,
+    # while Caddy does not send X-Real-IP.
     a2enmod remoteip; \
     { \
         echo 'RemoteIPHeader X-Forwarded-For'; \
-        echo 'RemoteIPHeader X-Real-IP'; \
         echo 'RemoteIPInternalProxy 10.0.0.0/8'; \
         echo 'RemoteIPInternalProxy 172.16.0.0/12'; \
         echo 'RemoteIPInternalProxy 192.168.0.0/16'; \
@@ -301,9 +303,11 @@ ENV SERVER_NAME="" \
 # above). No version label: the image always contains whatever Kopage currently
 # publishes, so any version baked in here would be a claim that goes stale.
 # IMAGE_MANIFEST.md records the actual contents of each published build.
-LABEL maintainer="Kopage" \
-      org.opencontainers.image.title="Kopage Docker" \
-      org.opencontainers.image.description="PHP 8.5 with Apache and ionCube for Kopage CMS"
+# Community-maintained and not affiliated with Kopage, so no maintainer label
+# naming them; the source label points at this repository instead.
+LABEL org.opencontainers.image.title="Kopage Docker" \
+      org.opencontainers.image.description="PHP 8.5 with Apache and ionCube for Kopage CMS" \
+      org.opencontainers.image.source="https://github.com/MansiVisuals/kopage-docker"
 
 # Expose port 80
 EXPOSE 80
