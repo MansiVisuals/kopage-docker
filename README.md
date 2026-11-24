@@ -1,10 +1,10 @@
 # Kopage Docker
 
-Docker image for running [Kopage CMS](https://www.kopage.com) with PHP 8.2, Apache, and ionCube Loader.
+Docker image for running [Kopage CMS](https://www.kopage.com) with PHP 8.5, Apache, and ionCube Loader.
 
 ## Features
 
-- **PHP 8.2** with Apache
+- **PHP 8.5** with Apache (security support until 2029-12-31)
 - **ionCube Loader** support
 - **Multi-architecture**: `linux/amd64` and `linux/arm64`
 - **Production-ready** PHP configuration (4GB memory limit, optimized for video uploads)
@@ -79,11 +79,6 @@ docker buildx build \
 > Kopage installer version and checksum, and the full Debian package list. CI
 > regenerates and commits it on every build, so the weekly package updates are
 > visible in this repo's history.
->
-> [`IMAGE_MANIFEST.md`](IMAGE_MANIFEST.md) records what the currently published
-> image contains — base image digest, PHP and ionCube versions, and the full
-> Debian package list. CI regenerates and commits it on every build, so the
-> weekly package updates are visible in this repo's history.
 
 ## PHP Configuration
 

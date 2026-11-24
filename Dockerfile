@@ -1,7 +1,10 @@
-# Base image: PHP 8.2 + Apache (official, multi-architecture)
+# Base image: PHP 8.5 + Apache (official, multi-architecture)
+# 8.5 is the newest PHP that ionCube ships a loader for, with security support
+# until 2029-12-31. Kopage supports PHP 7.1-7.4 and 8.1-8.5 with ionCube
+# Loaders (https://www.kopage.com/self-hosted).
 # Pin to Debian trixie: its Apache, OpenSSL and util-linux are clear of the
 # critical/high CVEs that bookworm has no fixes for
-FROM php:8.2-apache-trixie
+FROM php:8.5-apache-trixie
 
 # Cache-buster for APT layers (useful when building with buildx cache enabled)
 ARG APT_CACHE_BUSTER=0
@@ -64,8 +67,10 @@ RUN set -eux; \
     err="$(php --version 3>&1 1>&2 2>&3)"; \
     [ -z "$err" ]
 
-# Install ionCube Loader for PHP 8.2 (multi-architecture support)
-# Downloaded over HTTPS from official ionCube CDN
+# Install the ionCube Loader matching the base image's PHP (multi-architecture)
+# Downloaded over HTTPS from official ionCube CDN. The loader is picked from the
+# running PHP's version, so changing the FROM line is the only edit an upgrade
+# needs; the cp fails the build if ionCube has no loader for that version yet.
 RUN set -eux; \
     ARCH=$(uname -m); \
     echo "Detected architecture: $ARCH"; \
@@ -82,9 +87,10 @@ RUN set -eux; \
     curl -fsSL https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_${IONCUBE_ARCH}.tar.gz -o /tmp/ioncube.tar.gz; \
     tar -xzf /tmp/ioncube.tar.gz -C /tmp/; \
     PHP_EXT_DIR=$(php-config --extension-dir); \
-    echo "Installing ionCube to: $PHP_EXT_DIR"; \
-    cp /tmp/ioncube/ioncube_loader_lin_8.2.so $PHP_EXT_DIR/; \
-    echo "zend_extension=$PHP_EXT_DIR/ioncube_loader_lin_8.2.so" > /usr/local/etc/php/conf.d/00-ioncube.ini; \
+    PHP_MINOR=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;'); \
+    echo "Installing ionCube for PHP $PHP_MINOR to: $PHP_EXT_DIR"; \
+    cp "/tmp/ioncube/ioncube_loader_lin_${PHP_MINOR}.so" "$PHP_EXT_DIR/"; \
+    echo "zend_extension=$PHP_EXT_DIR/ioncube_loader_lin_${PHP_MINOR}.so" > /usr/local/etc/php/conf.d/00-ioncube.ini; \
     rm -rf /tmp/ioncube*; \
     php -v | grep -i ioncube; \
     echo "ionCube installation complete"
@@ -92,7 +98,12 @@ RUN set -eux; \
 # PHP configuration: error logging + security hardening, performance limits,
 # and production OPcache settings
 RUN set -eux; \
-    docker-php-ext-enable opcache; \
+    # OPcache is compiled into PHP 8.5+ and always loaded; older images ship it
+    # as a shared extension that has to be enabled
+    if [ -e "$(php-config --extension-dir)/opcache.so" ]; then \
+        docker-php-ext-enable opcache; \
+    fi; \
+    php -m | grep -qx 'Zend OPcache'; \
     { \
     echo 'error_reporting = E_ERROR | E_WARNING | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_RECOVERABLE_ERROR'; \
     echo 'display_errors = Off'; \
@@ -292,7 +303,7 @@ ENV SERVER_NAME="" \
 # IMAGE_MANIFEST.md records the actual contents of each published build.
 LABEL maintainer="Kopage" \
       org.opencontainers.image.title="Kopage Docker" \
-      org.opencontainers.image.description="PHP 8.2 with Apache and ionCube for Kopage CMS"
+      org.opencontainers.image.description="PHP 8.5 with Apache and ionCube for Kopage CMS"
 
 # Expose port 80
 EXPOSE 80
