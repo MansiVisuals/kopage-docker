@@ -1,7 +1,7 @@
 # Base image: PHP 8.5 + Apache (official, multi-architecture)
 # 8.5 is the newest PHP that ionCube ships a loader for, with security support
-# until 2029-12-31. Kopage officially lists PHP 8.1-8.2; 8.5 is verified by
-# running the installer end to end.
+# until 2029-12-31. Kopage supports PHP 7.1-7.4 and 8.1-8.5 with ionCube
+# Loaders (https://www.kopage.com/self-hosted).
 # Pin to Debian trixie: its Apache, OpenSSL and util-linux are clear of the
 # critical/high CVEs that bookworm has no fixes for
 FROM php:8.5-apache-trixie

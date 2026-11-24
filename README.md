@@ -79,11 +79,6 @@ docker buildx build \
 > Kopage installer version and checksum, and the full Debian package list. CI
 > regenerates and commits it on every build, so the weekly package updates are
 > visible in this repo's history.
->
-> [`IMAGE_MANIFEST.md`](IMAGE_MANIFEST.md) records what the currently published
-> image contains — base image digest, PHP and ionCube versions, and the full
-> Debian package list. CI regenerates and commits it on every build, so the
-> weekly package updates are visible in this repo's history.
 
 ## PHP Configuration
 
